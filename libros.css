@@ -1,0 +1,38 @@
+*{
+    background-color: #ffffff;
+    font-family: "Nunito", sans-serif;
+
+}
+h1 {
+    text-align: center;
+}
+form {
+    border: 1px dotted #C8154B;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    gap:10px;
+
+}
+
+form div {
+    margin-bottom: 15px;
+}
+
+nav{
+    background-color:  #d76a4c;
+}
+ul{
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+li{
+    padding:15px ;
+}
+li:hover{
+    background-color: #fadd8b;
+    color:#8B4513;
+}
