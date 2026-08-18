@@ -1,34 +1,62 @@
-const guardar = document.getElementById('agregarLibro')
+const formulario = document.getElementById('agregarLibro')
 const CLAVE_STORAGE = 'misLibros'
 
-guardar.addEventListener('submit', function(evento){
-    evento.preventDefault()
+// API para buscar las portadas de los libros
 
-    const nuevoLibro = {
-        id: Date.now(),
-        titulo: document.getElementById('titulo').value,
-        autor: document.getElementById('autore').value,
-        genero: document.getElementById('genero').value,
-        anio: document.getElementById('anio').value, 
-        paginas: document.getElementById('pages').value,
-        valoracion: document.getElementById('valoracion').value
+async function buscarPortada(titulo, autor) {
+  const query = encodeURIComponent(`${titulo} ${autor}`)
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${query}`
+  try {
+    const respuesta = await fetch(url);
+    const datos = await respuesta.json();
+    console.log('Datos recibidos de la API:', datos);
+
+    if (datos.items && datos.items.length > 0) {
+      const libroEncontrado = datos.items[0].volumeInfo
+      console.log('Portada encontrada:', libroEncontrado.imageLinks?.thumbnail);
+      return libroEncontrado.imageLinks?.thumbnail || null
     }
+    return null
+  } catch (error) {
+    console.error('Error buscando la portada:', error)
+    return null
+  }
+}
 
-    const libros = cargarLibros()
+// guardamos los libros
+formulario.addEventListener('submit', async function (evento) {
+  evento.preventDefault()
 
-    libros.push(nuevoLibro)
+  const titulo = document.getElementById('titulo').value
+  const autor = document.getElementById('autore').value
+  const portada = await buscarPortada(titulo, autor);
 
-    guardarLibros(libros)
 
-    guardar.requestFullscreen()
-    alert('Libro guardado!')
-})
+  const nuevoLibro = {
+    id: Date.now(),
+    titulo: titulo,
+    autor: autor,
+    genero: document.getElementById('genero').value,
+    anio: document.getElementById('anio').value,
+    paginas: document.getElementById('pages').value,
+    valoracion: document.getElementById('valoracion').value,
+    notas: document.getElementById('notas').value,
+    portada: portada   
+  }
+
+  const libros = cargarLibros()
+  libros.push(nuevoLibro)
+  guardarLibros(libros)
+
+  formulario.reset()
+  alert('Libro guardado ✅')
+});
 
 function cargarLibros() {
-  const datosGuardados = localStorage.getItem(CLAVE_STORAGE);
-  return datosGuardados ? JSON.parse(datosGuardados) : [];
+  const datosGuardados = localStorage.getItem(CLAVE_STORAGE)
+  return datosGuardados ? JSON.parse(datosGuardados) : []
 }
 
 function guardarLibros(libros) {
-  localStorage.setItem(CLAVE_STORAGE, JSON.stringify(libros));
+  localStorage.setItem(CLAVE_STORAGE, JSON.stringify(libros))
 }

@@ -36,3 +36,9 @@ h1{
     align-items: center;
     justify-content: center;
 }
+
+.portada-libro {
+  width: 120px;
+  display: block;
+  margin-bottom: 0.5rem;
+}
