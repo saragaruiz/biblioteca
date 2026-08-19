@@ -42,3 +42,63 @@ h1{
   display: block;
   margin-bottom: 0.5rem;
 }
+#listaLibros {
+width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+}
+.tarjeta-libro {
+    background-color: #fffaf4;
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(91, 67, 52, 0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tarjeta-libro:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 15px 35px rgba(91, 67, 52, 0.18);
+}
+.portada-contenedor {
+    width: 100%;
+    height: 280px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.portada-libro {
+    height: 100%;
+    max-width: 190px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    margin: 15px auto 0;
+
+}
+.valoracion {
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+.estrellas-llenas {
+    color: #e8c76a;
+}
+
+.estrellas-vacias {
+    color: #ddd6c9;
+}
+.borra{
+    border: none;
+    border-radius: 5px;
+    background-color: #A2AB73;
+    display: block;
+    margin-left: 90px;
+}
+.borra:hover{
+    background-color: #CC3A63;
+
+}

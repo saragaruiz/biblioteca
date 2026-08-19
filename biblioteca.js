@@ -4,19 +4,27 @@ const CLAVE_STORAGE = 'misLibros'
 // API para buscar las portadas de los libros
 
 async function buscarPortada(titulo, autor) {
-  const query = encodeURIComponent(`${titulo} ${autor}`)
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${query}`
+  const queryTitulo = encodeURIComponent(titulo)
+  const queryAutor = encodeURIComponent(autor)
+
+  const url = `https://openlibrary.org/search.json?title=${queryTitulo}&author=${queryAutor}`
+
   try {
-    const respuesta = await fetch(url);
-    const datos = await respuesta.json();
+    const respuesta = await fetch(url)
+    const datos = await respuesta.json()
+
     console.log('Datos recibidos de la API:', datos);
 
-    if (datos.items && datos.items.length > 0) {
-      const libroEncontrado = datos.items[0].volumeInfo
-      console.log('Portada encontrada:', libroEncontrado.imageLinks?.thumbnail);
-      return libroEncontrado.imageLinks?.thumbnail || null
+    if (datos.docs && datos.docs.length > 0) {
+      const libroEncontrado = datos.docs[0]
+
+     if (libroEncontrado.cover_i) {
+        return `https://covers.openlibrary.org/b/id/${libroEncontrado.cover_i}-M.jpg`
+      }
     }
+
     return null
+    
   } catch (error) {
     console.error('Error buscando la portada:', error)
     return null
