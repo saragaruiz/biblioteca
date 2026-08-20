@@ -4,31 +4,38 @@ const CLAVE_STORAGE = 'misLibros'
 // API para buscar las portadas de los libros
 
 async function buscarPortada(titulo, autor) {
-  const queryTitulo = encodeURIComponent(titulo)
-  const queryAutor = encodeURIComponent(autor)
 
-  const url = `https://openlibrary.org/search.json?title=${queryTitulo}&author=${queryAutor}`
+    const query = encodeURIComponent(`${titulo} ${autor}`)
 
-  try {
-    const respuesta = await fetch(url)
-    const datos = await respuesta.json()
+    const url = `https://openlibrary.org/search.json?q=${query}`
 
-    console.log('Datos recibidos de la API:', datos);
+    try {
+        const respuesta = await fetch(url)
+        const datos = await respuesta.json()
 
-    if (datos.docs && datos.docs.length > 0) {
-      const libroEncontrado = datos.docs[0]
+        console.log('URL:', url)
+        console.log('Resultados:', datos.docs)
 
-     if (libroEncontrado.cover_i) {
-        return `https://covers.openlibrary.org/b/id/${libroEncontrado.cover_i}-M.jpg`
-      }
+        if (datos.docs && datos.docs.length > 0) {
+
+            const libroConPortada = datos.docs.find(libro => libro.cover_i)
+
+            if (libroConPortada) {
+                const portada = `https://covers.openlibrary.org/b/id/${libroConPortada.cover_i}-M.jpg`
+
+                console.log('Portada encontrada:', portada)
+
+                return portada
+            }
+        }
+
+        console.log('No se encontró ninguna portada')
+        return null
+
+    } catch (error) {
+        console.error('Error buscando la portada:', error)
+        return null
     }
-
-    return null
-    
-  } catch (error) {
-    console.error('Error buscando la portada:', error)
-    return null
-  }
 }
 
 // guardamos los libros
@@ -59,6 +66,7 @@ formulario.addEventListener('submit', async function (evento) {
   formulario.reset()
   alert('Libro guardado ✅')
 });
+
 
 function cargarLibros() {
   const datosGuardados = localStorage.getItem(CLAVE_STORAGE)

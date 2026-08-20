@@ -1,13 +1,14 @@
 const CLAVE_STORAGE = 'misLibros'
 const contenedor = document.getElementById('listaLibros')
+const ordenarPor = document.getElementById('ordenarPor')
 
 function cargarLibros(){
     const datosGuardados = localStorage.getItem(CLAVE_STORAGE)
     return datosGuardados ? JSON.parse(datosGuardados) : []
 }
 
-function mostrarLibros(){
-    const libros = cargarLibros()
+function mostrarLibros(listaLibros){
+    const libros = listaLibros || cargarLibros()
  
     if(libros.length === 0){
         contenedor.innerHTML = '<p> Todavía no has leído ningun libro </p>'
@@ -23,7 +24,7 @@ function mostrarLibros(){
     tarjeta.innerHTML = `
     <div class="portada">
       ${libro.portada ? `<img src="${libro.portada}" alt="Portada de ${libro.titulo}" class="portada-libro">` : ''}
-    </div
+    </div>
   <div class="info">
       <h2>${libro.titulo}</h2>
       <p class="autor"><strong>Autor/a:</strong> ${libro.autor}</p>
@@ -62,3 +63,26 @@ borrar.addEventListener('click', function (evento) {
     mostrarLibros()
   }
 });
+
+ordenarPor.addEventListener('change', function () {
+          const libros = cargarLibros()
+
+    if (ordenarPor.value === 'asc') {
+        libros.sort(function (a, b) {
+            return a.anio - b.anio
+        })
+    } else if(ordenarPor.value ==='des'){
+      libros.sort(function(a, b){
+        return b.anio - a.anio
+      })
+    } else if (ordenarPor.value === 'titulo') {
+        libros.sort(function (a, b) {
+            return a.titulo.localeCompare(b.titulo)
+        })
+    } else if(ordenarPor.value === "valoracion"){
+      libros.sort(function(a, b){
+        return Number(b.valoracion) - Number(a.valoracion)     
+       })
+    }
+    mostrarLibros(libros)
+})
