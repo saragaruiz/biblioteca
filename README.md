@@ -13,6 +13,7 @@ Además, la aplicación utiliza la Open Library API para buscar automáticamente
 <ul>
   <li>Añadir un libro leído (título, autor, género, año, páginas y valoración)</li>
   <li>Ver el listado completo de libros leídos</li>
+  <li>Ordenar los libros según el año leído (ascendente/descendente), titulo(alfabéticamente), y valoración. </li>
   <li>Los datos persisten entre visitas (no se pierden al cerrar el navegador)</li>
   <li>Sección "Lista de deseos" (pendiente)</li>
 </ul>
