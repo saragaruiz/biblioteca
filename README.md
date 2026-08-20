@@ -3,17 +3,18 @@
 <h1 align="center">Biblioteca de libros</h1>
 </div>
 <p align="left">
-<img src="https://img.shields.io/badge/STATUS-EN%20DESAROLLO-blue">
+<img src="https://img.shields.io/badge/STATUS-EN%20DESARROLLO-blue">
 </p>
 
-<p>Proyecto personal para practicar JavaScript: una web sencilla para registrar los libros que voy leyendo, guardando los datos en el navegador con localStorage. </p>
+<p>Proyecto personal para practicar JavaScript: una web sencilla para registrar los libros que voy leyendo, guardando los datos en el navegador con localStorage. 
+Además, la aplicación utiliza la Open Library API para buscar automáticamente las portadas de los libros a partir de su título y autor.</p>
 
 <h3>✨ Funcionalidades </h3>
 <ul>
   <li>Añadir un libro leído (título, autor, género, año, páginas y valoración)</li>
   <li>Ver el listado completo de libros leídos</li>
   <li>Los datos persisten entre visitas (no se pierden al cerrar el navegador)</li>
-  <li>Sección "Lista de deseos" (pendiente de implementar)</li>
+  <li>Sección "Lista de deseos" (pendiente)</li>
 </ul>
 
 <h3>🛠️ Tecnologías </h3>
@@ -22,5 +23,8 @@
   <li>CSS3 (Google Fonts: Nunito)</li>
   <li>JavaScript vanilla (sin frameworks ni librerías)</li>
   <li>localStorage como almacenamiento de datos</li>
+  <li>Open Library API — búsqueda de libros y obtención de sus portadas.</li>
+  <li>Google Fonts — tipografía Nunito.</li>
+</ul>
 
   
