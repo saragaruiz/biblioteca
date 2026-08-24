@@ -4,21 +4,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="indice.css">  
+    <link rel="stylesheet" type="text/css" href="listaDeseos.css">  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca de libros</title>
 </head>
 <body>
-    <header class="banner">
     <nav>
         <ul>
-           <li><a href="indice.html">Inicio</a></li>
+            <li><a href="indice.html">Inicio</a></li>
             <li><a href="agregarLibros.html">Agregar libro</a></li>
             <li><a href="librosLeidos.html">Ver libros leídos</a></li>
             <li><a href="listaDeseos.html">Lista de deseos</a></li>
         </ul>
     </nav>
+    <header class="banner">
     </header>
+
+<h1>LISTA DE DESEOS</h1>
+<p>Descubre tu próxima lectura</p>
+
+<div class="recomendaciones">
+    <h2>Recomendados para ti</h2>
+    <div id="listaRecomendaciones"></div>
+</div>
+
+<div class="deseos">
+    <h2>Mi lista de deseos</h2>
+    <div id="listaDeseos"></div>
+</div>
+<script src="datos.js"></script>
+<script src="listaDeseos.js"></script>
 </body>
 </html>

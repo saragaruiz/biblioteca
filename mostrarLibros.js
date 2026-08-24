@@ -1,11 +1,5 @@
-const CLAVE_STORAGE = 'misLibros'
 const contenedor = document.getElementById('listaLibros')
 const ordenarPor = document.getElementById('ordenarPor')
-
-function cargarLibros(){
-    const datosGuardados = localStorage.getItem(CLAVE_STORAGE)
-    return datosGuardados ? JSON.parse(datosGuardados) : []
-}
 
 function mostrarLibros(listaLibros){
     const libros = listaLibros || cargarLibros()

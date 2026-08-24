@@ -1,0 +1,27 @@
+*{
+    font-family: "Nunito", sans-serif;
+}
+
+nav{
+    background-color:  #ffde59;
+    position: sticky;
+    top:0;
+    z-index: 10;
+}
+ul{
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+li{
+    padding:15px ;
+}
+li:hover{
+    background-color: #fadd8b;
+    color:#8B4513;
+}
+h1, p{
+    text-align: center;
+}
