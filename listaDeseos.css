@@ -25,3 +25,119 @@ li:hover{
 h1, p{
     text-align: center;
 }
+
+.carrusel{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width:100%;
+}
+
+#listaRecomendaciones{
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    flex: 1;
+    padding: 20px 5px;
+    scrollbar-width: none;
+}
+#listaRecomendaciones::-webkit-scrollbar {
+    display: none;
+}
+
+#listaRecomendaciones .tarjeta-libro {
+    flex: 0 0 220px;
+    scroll-snap-align: start;
+}
+
+
+#listaDeseos{
+   display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+}
+
+#listaDeseos .tarjeta-libro {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#listaDeseos .tarjeta-libro:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+#listaDeseos .portada {
+    width: 100%;
+    height: 280px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#listaDeseos .portada-libro {
+    width: 100%;
+    height: 100%;
+    object-fit: contain ;
+}
+.info {
+    padding: 18px;
+}
+
+.info h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+}
+
+.autor {
+    margin: 0 0 15px;
+    font-size: 14px;
+}
+#listaRecomendaciones .anadir-deseo{
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #A2AB73;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s ease;
+}
+#listaRecomendaciones .anadir-deseo:hover{
+    background: #CC3A63;
+
+}
+
+#listaDeseos .quitar-deseo {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #A2AB73;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s ease;
+}
+
+#listaDeseos .quitar-deseo:hover {
+    background: #CC3A63;
+}
+
+.flecha{ 
+    border: none;
+    background-color:transparent ;
+    padding: 0;
+    cursor: pointer;
+    color: #7c8357;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+}

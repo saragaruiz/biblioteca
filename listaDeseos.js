@@ -1,6 +1,23 @@
 const CLAVE_DESEOS = 'listaDeseos'
 const recomendados = document.getElementById('listaRecomendaciones')
 const deseos = document.getElementById('listaDeseos')
+const flechaIzquierda = document.getElementById('flechaIzquierda')
+const flechaDerecha = document.getElementById('flechaDerecha')
+
+
+flechaDerecha.addEventListener('click', function () {
+    recomendados.scrollBy({
+        left: 250,
+        behavior: 'smooth'
+    })
+})
+
+flechaIzquierda.addEventListener('click', function () {
+    recomendados.scrollBy({
+        left: -250,
+        behavior: 'smooth'
+    })
+})
 
 // comprobamos que genero se han leido mas
 function generoMasLeido(){
@@ -18,65 +35,167 @@ function generoMasLeido(){
         return conteo[a] > conteo[b] ? a : b
     })
 }
+// comprobamos la puntuacion de los libros que hemos leído 
 
+function librosFavoritos() {
+
+    const libros = cargarLibros()
+
+    return libros.filter(function (libro) {
+            return Number(libro.valoracion) >= 4
+        })
+        .sort(function (a, b) {
+            return Math.random() - 0.5
+        })
+        .slice(0, 3)
+}
 // LLAMAMOS A LA API 
-async function buscarLectura(){
-    const genero = generoMasLeido()
-    if(!genero){
-        recomendados.innerHTML = '<p>Aún no sabemos lo que te gusta...</p>'
+async function buscarRecomendaciones() {
+    const favoritos = librosFavoritos()
+    if (favoritos.length === 0) {
+        recomendados.innerHTML =
+            '<p>Aún no sé lo que te gusta....</p>'
         return
     }
-    const url = `https://www.googleapis.com/books/v1/volumes?q=subject:${encodeURIComponent(genero)}&maxResults=12`
-    try{
-        const respuesta = await fetch(url)
-        const datos = await respuesta.json()
-        verRecomendados(datos.items || [])
-    }catch(error){
-        recomendados.innerHTML = '<p>No puedo cargar las recomendaciones ahora mismo</p>'
+
+    let resultados = []
+     for (const libro of favoritos) {
+
+        const consultas = [
+            libro.titulo,
+            libro.autor,
+            libro.genero
+        ]
+
+        for (const consulta of consultas) {
+
+            const url =
+                `https://openlibrary.org/search.json?q=${encodeURIComponent(consulta)}&limit=6`
+
+            try {
+
+                const respuesta = await fetch(url)
+
+                if (!respuesta.ok) {
+                    throw new Error('Error en la API')
+                }
+
+                const datos = await respuesta.json()
+
+                resultados = resultados.concat(datos.docs || [])
+
+            } catch (error) {
+
+                console.error(
+                    'No se pudieron buscar recomendaciones para:',
+                    consulta
+                )
+            }
+        }
     }
+
+    verRecomendados(resultados)
 }
 
-function verRecomendados(itemsGoogle){
-    const librosLeidos = cargarLibros().map(function (l){
-        return l.titulo.toLowerCase()
-    })
-    const filtrados = itemsGoogle.filter(function (item) {
-        const titulo = item.volumeInfo.title
-        return titulo && !librosLeidos.includes(titulo.toLowerCase())
+function verRecomendados(itemsOpenLibrary) {
+
+    const librosLeidos = cargarLibros().map(function (libro) {
+        return libro.titulo.toLowerCase()
     })
 
-    if (filtrados.length === 0) {
-        recomendados.innerHTML = '<p>No encontramos recomendaciones nuevas por ahora.</p>'
+
+    // Eliminamos libros que ya hemos leído
+    const filtrados = itemsOpenLibrary.filter(function (item) {
+
+        const titulo = item.title
+
+        if (!titulo) {
+            return false
+        }
+
+        return !librosLeidos.includes(titulo.toLowerCase())
+    })
+
+
+    // Eliminamos duplicados
+    const librosUnicos = []
+
+    filtrados.forEach(function (item) {
+
+        const titulo = item.title.toLowerCase()
+
+        const yaExiste = librosUnicos.some(function (libro) {
+            return libro.title.toLowerCase() === titulo
+        })
+
+        if (!yaExiste) {
+            librosUnicos.push(item)
+        }
+    })
+
+
+    if (librosUnicos.length === 0) {
+
+        recomendados.innerHTML =
+            '<p>No encontramos recomendaciones nuevas por ahora.</p>'
+
         return
     }
 
-recomendados.innerHTML = ''
 
-    filtrados.forEach(function (item) {
-        const info = item.volumeInfo
-        const portada = info.imageLinks ? info.imageLinks.thumbnail : ''
-        const autor = info.authors ? info.authors.join(', ') : 'Autor desconocido'
+    recomendados.innerHTML = ''
+
+
+    librosUnicos.slice(0, 12).forEach(function (item) {
+
+        const titulo = item.title
+
+        const autor = item.author_name
+            ? item.author_name.join(', ')
+            : 'Autor desconocido'
+
+        const portada = item.cover_i
+            ? `https://covers.openlibrary.org/b/id/${item.cover_i}-M.jpg`
+            : ''
+
 
         const tarjeta = document.createElement('div')
+
         tarjeta.classList.add('tarjeta-libro')
+
 
         tarjeta.innerHTML = `
             <div class="portada">
-                ${portada ? `<img src="${portada}" alt="Portada de ${info.title}" class="portada-libro">` : ''}
+                ${
+                    portada
+                    ? `<img 
+                        src="${portada}" 
+                        alt="Portada de ${titulo}" 
+                        class="portada-libro">`
+                    : ''
+                }
             </div>
+
             <div class="info">
-                <h2>${info.title}</h2>
-                <p class="autor"><strong>Autor/a:</strong> ${autor}</p>
-                <p class="genero"><strong>Género:</strong> ${generoMasLeido()}</p>
-                <button class="anadir-deseo" 
-                    data-titulo="${info.title.replace(/"/g, '&quot;')}" 
+
+                <h2>${titulo}</h2>
+
+                <p class="autor">
+                    <strong>Autor/a:</strong> ${autor}
+                </p>
+
+                <button 
+                    class="anadir-deseo"
+                    data-titulo="${titulo.replace(/"/g, '&quot;')}"
                     data-autor="${autor.replace(/"/g, '&quot;')}"
                     data-portada="${portada}">
                     Añadir a deseos
                 </button>
+
             </div>
         `
-         recomendados.appendChild(tarjeta)
+
+        recomendados.appendChild(tarjeta)
     })
 }
 function cargarDeseos() {
@@ -153,5 +272,5 @@ deseos.addEventListener('click', function (evento) {
     }
 })
 
-buscarLectura()
+buscarRecomendaciones()
 mostrarDeseos()
