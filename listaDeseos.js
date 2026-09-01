@@ -4,6 +4,53 @@ const deseos = document.getElementById('listaDeseos')
 const flechaIzquierda = document.getElementById('flechaIzquierda')
 const flechaDerecha = document.getElementById('flechaDerecha')
 
+const MAPA_GENEROS = {
+    'ciencia ficción': 'science_fiction',
+    'ciencia ficcion': 'science_fiction',
+    'fantasía': 'fantasy',
+    'fantasia': 'fantasy',
+    'terror': 'horror',
+    'novela negra': 'mystery',
+    'misterio': 'mystery',
+    'romance': 'romance',
+    'novela romántica': 'romance',
+    'thriller': 'thriller',
+    'suspense': 'thriller',
+    'histórica': 'historical_fiction',
+    'novela histórica': 'historical_fiction',
+    'aventuras': 'adventure',
+    'clásicos': 'classic_literature',
+    'literatura clásica': 'classic_literature',
+    'poesía': 'poetry',
+    'poesia': 'poetry',
+    'biografía': 'biography',
+    'biografia': 'biography',
+    'ensayo': 'essays',
+    'autoayuda': 'self-help',
+    'juvenil': 'young_adult_fiction',
+    'infantil': 'children',
+    'distopía': 'dystopia',
+    'distopia': 'dystopia',
+    'policíaca': 'detective_and_mystery_stories',
+    'policiaca': 'detective_and_mystery_stories',
+    'cómic': 'comics',
+    'comic': 'comics',
+    'novela gráfica': 'graphic_novels',
+    'drama': 'drama',
+    'humor': 'humor'
+}
+
+function normalizarSubject(texto) {
+    const limpio = texto.toLowerCase().trim()
+
+    if (MAPA_GENEROS[limpio]) {
+        return MAPA_GENEROS[limpio]
+    }
+
+    return limpio
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '_')
+}
 
 flechaDerecha.addEventListener('click', function () {
     recomendados.scrollBy({
@@ -49,9 +96,11 @@ function librosFavoritos() {
         })
         .slice(0, 3)
 }
+
 // LLAMAMOS A LA API 
 async function buscarRecomendaciones() {
     const favoritos = librosFavoritos()
+
     if (favoritos.length === 0) {
         recomendados.innerHTML =
             '<p>Aún no sé lo que te gusta....</p>'
@@ -59,42 +108,75 @@ async function buscarRecomendaciones() {
     }
 
     let resultados = []
+
      for (const libro of favoritos) {
+         const subject = normalizarSubject(libro.genero)
+        const url = `https://openlibrary.org/search.json?subject=${encodeURIComponent(subject)}&language=spa&limit=20`
+        try {
 
-        const consultas = [
-            libro.titulo,
-            libro.autor,
-            libro.genero
-        ]
+            const respuesta = await fetch(url)
 
-        for (const consulta of consultas) {
-
-            const url =
-                `https://openlibrary.org/search.json?q=${encodeURIComponent(consulta)}&limit=6`
-
-            try {
-
-                const respuesta = await fetch(url)
-
-                if (!respuesta.ok) {
-                    throw new Error('Error en la API')
-                }
-
-                const datos = await respuesta.json()
-
-                resultados = resultados.concat(datos.docs || [])
-
-            } catch (error) {
-
-                console.error(
-                    'No se pudieron buscar recomendaciones para:',
-                    consulta
-                )
+            if (!respuesta.ok) {
+                throw new Error('Error en la API')
             }
+
+            const datos = await respuesta.json()
+
+            resultados = resultados.concat(datos.docs || [])
+
+        } catch (error) {
+
+            console.error(
+                'Error buscando recomendaciones:',
+                error
+            )
         }
     }
+    const resultadosEspanol = resultados.filter(function (libro) { 
+        return libro.language && libro.language.includes('spa') 
+    }) 
+    if (resultadosEspanol.length > 0) { 
+        verRecomendados(resultadosEspanol) 
+    } else {
+         verRecomendados(resultados) 
+        } 
+    }
+function crearTarjetaLibro(item) {
+    const titulo = item.title
 
-    verRecomendados(resultados)
+    const autor = item.author_name
+        ? item.author_name.join(', ')
+        : 'Autor desconocido'
+
+    const portada = item.cover_i
+        ? `https://covers.openlibrary.org/b/id/${item.cover_i}-M.jpg`
+        : ''
+
+    const tarjeta = document.createElement('div')
+    tarjeta.classList.add('tarjeta-libro')
+
+    tarjeta.innerHTML = `
+        <div class="portada">
+            ${
+                portada
+                ? `<img src="${portada}" alt="Portada de ${titulo}" class="portada-libro">`
+                : ''
+            }
+        </div>
+        <div class="info">
+            <h2>${titulo}</h2>
+            <p class="autor"><strong>Autor/a:</strong> ${autor}</p>
+            <button 
+                class="anadir-deseo"
+                data-titulo="${titulo.replace(/"/g, '&quot;')}"
+                data-autor="${autor.replace(/"/g, '&quot;')}"
+                data-portada="${portada}">
+                Añadir a deseos
+            </button>
+        </div>
+    `
+
+    return tarjeta
 }
 
 function verRecomendados(itemsOpenLibrary) {
@@ -112,7 +194,6 @@ function verRecomendados(itemsOpenLibrary) {
         if (!titulo) {
             return false
         }
-
         return !librosLeidos.includes(titulo.toLowerCase())
     })
 
@@ -121,9 +202,7 @@ function verRecomendados(itemsOpenLibrary) {
     const librosUnicos = []
 
     filtrados.forEach(function (item) {
-
         const titulo = item.title.toLowerCase()
-
         const yaExiste = librosUnicos.some(function (libro) {
             return libro.title.toLowerCase() === titulo
         })
@@ -135,69 +214,74 @@ function verRecomendados(itemsOpenLibrary) {
 
 
     if (librosUnicos.length === 0) {
-
         recomendados.innerHTML =
             '<p>No encontramos recomendaciones nuevas por ahora.</p>'
-
         return
     }
 
 
     recomendados.innerHTML = ''
 
-
     librosUnicos.slice(0, 12).forEach(function (item) {
-
-        const titulo = item.title
-
-        const autor = item.author_name
-            ? item.author_name.join(', ')
-            : 'Autor desconocido'
-
-        const portada = item.cover_i
-            ? `https://covers.openlibrary.org/b/id/${item.cover_i}-M.jpg`
-            : ''
-
-
-        const tarjeta = document.createElement('div')
-
-        tarjeta.classList.add('tarjeta-libro')
-
-
-        tarjeta.innerHTML = `
-            <div class="portada">
-                ${
-                    portada
-                    ? `<img 
-                        src="${portada}" 
-                        alt="Portada de ${titulo}" 
-                        class="portada-libro">`
-                    : ''
-                }
-            </div>
-
-            <div class="info">
-
-                <h2>${titulo}</h2>
-
-                <p class="autor">
-                    <strong>Autor/a:</strong> ${autor}
-                </p>
-
-                <button 
-                    class="anadir-deseo"
-                    data-titulo="${titulo.replace(/"/g, '&quot;')}"
-                    data-autor="${autor.replace(/"/g, '&quot;')}"
-                    data-portada="${portada}">
-                    Añadir a deseos
-                </button>
-
-            </div>
-        `
-
-        recomendados.appendChild(tarjeta)
+        recomendados.appendChild(crearTarjetaLibro(item))
     })
 }
+
+const inputBusqueda = document.getElementById('inputBusqueda')
+const botonBuscar = document.getElementById('botonBuscar')
+const resultadosBusqueda = document.getElementById('resultadosBusqueda')
+
+async function buscarLibrosEnAPI() {
+    const consulta = inputBusqueda.value.trim()
+
+    if (consulta === '') {
+        resultadosBusqueda.innerHTML = ''
+        return
+    }
+
+    resultadosBusqueda.innerHTML = '<p>Buscando...</p>'
+
+    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(consulta)}&limit=10`
+
+    try {
+        const respuesta = await fetch(url)
+        if (!respuesta.ok) throw new Error('Error en la API')
+
+        const datos = await respuesta.json()
+        const items = datos.docs || []
+
+        const librosLeidos = cargarLibros().map(function (libro) {
+            return libro.titulo.toLowerCase()
+        })
+
+        const filtrados = items.filter(function (item) {
+            return item.title && !librosLeidos.includes(item.title.toLowerCase())
+        })
+
+        if (filtrados.length === 0) {
+            resultadosBusqueda.innerHTML = '<p>No encontramos resultados.</p>'
+            return
+        }
+
+        resultadosBusqueda.innerHTML = ''
+        filtrados.slice(0, 20).forEach(function (item) {
+            resultadosBusqueda.appendChild(crearTarjetaLibro(item))
+        })
+
+    } catch (error) {
+        console.error('Error en la búsqueda:', error)
+        resultadosBusqueda.innerHTML = '<p>Ha ocurrido un error al buscar.</p>'
+    }
+}
+
+botonBuscar.addEventListener('click', buscarLibrosEnAPI)
+
+inputBusqueda.addEventListener('keydown', function (evento) {
+    if (evento.key === 'Enter') {
+        buscarLibrosEnAPI()
+    }
+})
+
 function cargarDeseos() {
     const datos = localStorage.getItem(CLAVE_DESEOS)
     return datos ? JSON.parse(datos) : []
@@ -235,8 +319,7 @@ function mostrarDeseos() {
     })
 }
 
-// añadir a deseos ---
-recomendados.addEventListener('click', function (evento) {
+document.addEventListener('click', function (evento) {
     if (evento.target.classList.contains('anadir-deseo')) {
         const boton = evento.target
         const nuevoDeseo = {
@@ -248,7 +331,6 @@ recomendados.addEventListener('click', function (evento) {
 
         const listaDeseos = cargarDeseos()
 
-        // Evita duplicados
         const yaExiste = listaDeseos.some(function (d) {
             return d.titulo === nuevoDeseo.titulo
         })
@@ -260,6 +342,7 @@ recomendados.addEventListener('click', function (evento) {
         }
     }
 })
+
 deseos.addEventListener('click', function (evento) {
     if (evento.target.classList.contains('quitar-deseo')) {
         const idAQuitar = evento.target.dataset.id

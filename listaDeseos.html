@@ -2,11 +2,17 @@
 <html lang="es">
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" type="text/css" href="listaDeseos.css">  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>Biblioteca de libros</title>
 </head>
 <body>
@@ -24,6 +30,12 @@
 <h1>LISTA DE DESEOS</h1>
 <p>Descubre tu próxima lectura</p>
 
+<div class="buscador">
+    <input type="text" id="inputBusqueda" placeholder="Buscar por título o autor...">
+    <button id="botonBuscar">Buscar</button>
+</div>
+
+<div id="resultadosBusqueda" class="lista-libros"></div>
 <div class="recomendaciones">
     <h2>Recomendados para ti</h2>
 
